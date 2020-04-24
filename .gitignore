@@ -1,0 +1,8 @@
+.ipynb_checkpoints
+__pycache__
+
+/01_data/*
+/04_target-answer-identification/02_ncrf++/NCRFpp/*
+
+/.git_old
+/.vscode
