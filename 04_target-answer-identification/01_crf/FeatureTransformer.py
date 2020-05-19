@@ -2,7 +2,6 @@ from sklearn.base import TransformerMixin
 from tqdm import tqdm
 import sys
 
-sys.path.append('../../00_common')
 from ngrams import NGrams
 
 class FeatureTransformer(TransformerMixin):
