@@ -6,3 +6,8 @@ __pycache__
 
 /.git_old
 /.vscode
+
+/00_common/stanford-corenlp-4.0.0
+-1_playground/bert-base-srl-2020.03.24.tar.gz
+-1_playground/Untitled.ipynb
+04_target-answer-identification/01_crf/bert-base-srl-2020.03.24.tar.gz

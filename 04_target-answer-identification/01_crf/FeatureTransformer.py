@@ -4,21 +4,29 @@ import sys
 
 from ngrams import NGrams
 
+from allennlp.predictors.predictor import Predictor
+import allennlp_models.syntax.srl
+
+#wget https://storage.googleapis.com/allennlp-public-models/bert-base-srl-2020.03.24.tar.gz
+
 class FeatureTransformer(TransformerMixin):
     def __init__(self,
                  nlp,
                  pos_features=True,
                  ent_type_features=True,
                  lemma_features=True,
+                 srl_features=True,
                  is_features=True,
                  position_features=True,
                  bias=True,
                  begin=-1,
                  end=1):
         self.nlp = nlp
+        self.predictor = Predictor.from_path("bert-base-srl-2020.03.24.tar.gz")
         self.pos_features = pos_features
         self.ent_type_features = ent_type_features
         self.lemma_features = lemma_features
+        self.srl_features = srl_features
         self.is_features = is_features
         self.position_features = position_features
         self.bias = bias
@@ -63,7 +71,7 @@ class FeatureTransformer(TransformerMixin):
     def transform(self, X):
         return [self.text2features(x) for x in tqdm(self.nlp.pipe(X))]
 
-    def word2features(self, sent, i):
+    def word2features(self, sent, srl_tags, srl_verb, i):
         features = {}
         if self.bias:
             features['bias'] = 1.0
@@ -94,6 +102,9 @@ class FeatureTransformer(TransformerMixin):
                             features['{}:word.ent_iob_'.format(n)] = word.ent_iob_
                         if self.lemma_features:
                             features['{}:word.lemma'.format(n)] = word.lemma_
+                        if self.srl_features:
+                            features['{}:srl'.format(n)] = srl_tags[i+n]
+                            features['{}:srl_verb'.format(n)] = srl_verb
                         if self.is_features:
                             features.update({
                                 '{}:word.is_alpha()'.format(n): word.is_alpha,
@@ -142,4 +153,12 @@ class FeatureTransformer(TransformerMixin):
         return features
 
     def text2features(self, sent):
-        return [self.word2features(sent,i) for i in range(len(sent))]
+        print([token.text for token in sent])
+        srl_pred = self.predictor.predict_tokenized([token.text for token in sent])
+        if not srl_pred["verbs"]:
+            srl_tags = ["O"]*len(sent)
+            srl_verb = "NONE"
+        else:
+            srl_tags = self.predictor.predict_tokenized([token.text for token in sent])["verbs"][0]["tags"]
+            srl_verb = srl_pred["verbs"][0]["verb"]
+        return [self.word2features(sent, srl_tags, srl_verb, i) for i in range(len(sent))]
