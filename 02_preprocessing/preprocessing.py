@@ -2,7 +2,6 @@ import json
 import random
 import pandas as pd
 import spacy
-from spacy.tokens import DocBin
 from tqdm import tqdm
 import pickle
 from sklearn.model_selection import train_test_split
@@ -50,6 +49,7 @@ def get_answer_sentence(nlp_paragraph, answer_start, answer_text):
 
 def read_to_dataframe(filename, labeling, include_plausible_answers=False):
     nlp = spacy.load('en_core_web_sm')
+    parser = CoreNLPParser(url='http://localhost:9000')
 
     df_paragraph = {"text_title":[],
                     "paragraph_text":[],
@@ -74,6 +74,7 @@ def read_to_dataframe(filename, labeling, include_plausible_answers=False):
                     'correct_answer_text':[],
                     'correct_answer_sentence':[],
                     'correct_answer_sentence_token':[],
+                    #'correct_answer_sentences_parse_tree':[],
                     'correct_answer_char_index':[], 
                     'correct_answer_token_index':[],
                     'correct_masked_answer_text_token':[],
@@ -89,8 +90,6 @@ def read_to_dataframe(filename, labeling, include_plausible_answers=False):
                     "paragraph_tokens":[]}
 
     with open(filename) as json_data:
-        parser = CoreNLPParser(url='http://localhost:9000')
-
         json_dict = json.load(json_data)
         for text in tqdm(json_dict['data']):
             text_title = text['title']
@@ -114,6 +113,7 @@ def read_to_dataframe(filename, labeling, include_plausible_answers=False):
                     correct_answer_token_index = []
                     correct_answer_sentences = []
                     correct_answer_sentences_token = []
+                    #correct_answer_sentences_parse_tree = []
                     correct_masked_answer_texts_token = []
                     correct_masked_answer_sentences_token = []
 
@@ -140,6 +140,7 @@ def read_to_dataframe(filename, labeling, include_plausible_answers=False):
                                 correct_masked_answer_texts_token.append(masked_answer_text_token)
                                 correct_masked_answer_sentences_token.append(masked_answer_sentence_token)
                                 correct_answer_sentences_token.append(correct_answer_sentence_token)
+                                #correct_answer_sentences_parse_tree.append(str(list(parser.parse(correct_answer_sentence_token))[0]))
                                 if labeling == "IOB":
                                     if (answer_span_end-answer_span_start) == 1:
                                         askable_tokens[answer_span_start] = "I-Answer"
@@ -182,6 +183,7 @@ def read_to_dataframe(filename, labeling, include_plausible_answers=False):
                     df_question['correct_answer_text'].append(correct_answer_texts)
                     df_question['correct_answer_sentence'].append(correct_answer_sentences)
                     df_question['correct_answer_sentence_token'].append(correct_answer_sentences_token)
+                    #df_question['correct_answer_sentences_parse_tree'].append(correct_answer_sentences_parse_tree)
                     df_question['correct_answer_char_index'].append(correct_answer_char_index) 
                     df_question['correct_answer_token_index'].append(correct_answer_token_index)
                     df_question['correct_masked_answer_text_token'].append(correct_masked_answer_texts_token)
@@ -332,8 +334,8 @@ def create_conll_file(df_sentences, filename):
                 f.write("{}\t{}\n".format(token, tagging))
             f.write("\n")
 
-TRAIN_FILENAME = 'rawData/train-v2.0.json'
-DEV_FILENAME = 'rawData/dev-v2.0.json'
+TRAIN_FILENAME = '01_data/rawData/train-v2.0.json'
+DEV_FILENAME = '01_data/rawData/dev-v2.0.json'
 LABELING = "IO"
 
 create_train_dev_test(TRAIN_FILENAME, DEV_FILENAME, LABELING)

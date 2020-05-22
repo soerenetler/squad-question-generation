@@ -21,10 +21,10 @@ from sklearn.pipeline import Pipeline
 from Custom import *
 
 if __name__ == "__main__":
-    NO_SAMPLES=10000
+    NO_SAMPLES=100
 
-    TRAIN_FILENAME = "../../01_data/preprocessedData/random_train_sentences.csv"
-    TEST_FILENAME = "../../01_data/preprocessedData/random_dev_sentences.csv"
+    TRAIN_FILENAME = "01_data/preprocessedData/random_train_sentences.csv"
+    TEST_FILENAME = "01_data/preprocessedData/random_dev_sentences.csv"
 
     df_askable_paragraph_train = pd.read_csv(TRAIN_FILENAME)
     df_askable_paragraph_train["askable_tokens"] = [ast.literal_eval(t) for t in df_askable_paragraph_train["askable_tokens"]]
