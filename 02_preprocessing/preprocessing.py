@@ -6,6 +6,7 @@ from tqdm import tqdm
 import pickle
 from sklearn.model_selection import train_test_split
 from nltk.parse import CoreNLPParser
+import re
 
 def get_answer_sentence(nlp_paragraph, answer_start, answer_text):
     length = len(answer_text)
@@ -41,7 +42,7 @@ def get_answer_sentence(nlp_paragraph, answer_start, answer_text):
             masked_answer_sentence_token.append(token.text.lower())
 
     return answer_span.sent.text,\
-           [token.text for token in answer_span.sent],\
+           [clean_token(token) for token in answer_span.sent],\
            answer_span.start,\
            answer_span.end,\
            masked_answer_text_token,\
@@ -96,7 +97,7 @@ def read_to_dataframe(filename, labeling, include_plausible_answers=False):
             for paragraph in text['paragraphs']:
                 paragraph_text = paragraph['context']
                 nlp_paragraph = nlp(paragraph_text)
-                paragraph_tokens = [t.text for t in nlp_paragraph]
+                paragraph_tokens = [clean_token(t) for t in nlp_paragraph]
                 askable_tokens = ["O"]*len(nlp_paragraph)
                 for question in paragraph['qas']:
                     question_id = question["id"]
@@ -106,7 +107,7 @@ def read_to_dataframe(filename, labeling, include_plausible_answers=False):
                     question_pos = [token.pos_ for token in question_doc]
                     question_tag =[token.tag_ for token in question_doc]
 
-                    question_parse_tree = str(list(parser.parse(question_token))[0])
+                    question_parse_tree = ""#str(list(parser.parse(question_token))[0])
 
                     correct_answer_texts = []
                     correct_answer_char_index = []
@@ -213,7 +214,7 @@ def read_to_dataframe(filename, labeling, include_plausible_answers=False):
 
                 for sentence in nlp_paragraph.doc.sents:
                     df_sentences['text_title'].append(text_title)
-                    df_sentences['sentence_text'].append(sentence.text)
+                    df_sentences['sentence_text'].append(re.sub("\n", "<<LINEBREAK>>", sentence.text))
                     df_sentences['sentence_tokens'].append(paragraph_tokens[sentence.start:sentence.end])
                     df_sentences['askable_tokens'].append(askable_tokens[sentence.start:sentence.end])
                     df_sentences['sentence_start'].append(sentence.start)
@@ -229,20 +230,20 @@ def create_train_dev_test(train_filename, dev_filename, labeling):
     dev_paragraph, dev_sentences, dev_questions = read_to_dataframe(dev_filename, labeling, include_plausible_answers=True)
     dev_question_answer = create_question_answer_mapping(dev_questions)
     
-    train_paragraph.to_csv("preprocessedData/train_paragraph.csv")
-    dev_paragraph.to_csv("preprocessedData/dev_paragraph.csv")
+    train_paragraph.to_csv("01_data/preprocessedData/train_paragraph.csv")
+    dev_paragraph.to_csv("01_data/preprocessedData/dev_paragraph.csv")
     
-    train_questions.to_csv("../01_data/preprocessedData/train_questions.csv")
-    dev_questions.to_csv("preprocessedData/dev_questions.csv")
+    train_questions.to_csv("01_data/preprocessedData/train_questions.csv")
+    dev_questions.to_csv("01_data/preprocessedData/dev_questions.csv")
     
-    train_sentences.to_csv("preprocessedData/train_sentences.csv")
-    dev_sentences.to_csv("preprocessedData/dev_sentences.csv")
+    train_sentences.to_csv("01_data/preprocessedData/train_sentences.csv")
+    dev_sentences.to_csv("01_data/preprocessedData/dev_sentences.csv")
 
-    train_question_answer.to_csv("preprocessedData/train_question_answer_mapping.csv")
-    dev_question_answer.to_csv("preprocessedData/dev_question_answer_mapping.csv")
+    train_question_answer.to_csv("01_data/preprocessedData/train_question_answer_mapping.csv")
+    dev_question_answer.to_csv("01_data/preprocessedData/dev_question_answer_mapping.csv")
     
-    create_conll_file(train_sentences, "preprocessedData/train_conll.csv")
-    create_conll_file(dev_sentences, "preprocessedData/dev_conll.csv")
+    create_conll_file(train_sentences, "01_data/preprocessedData/train_conll.csv")
+    create_conll_file(dev_sentences, "01_data/preprocessedData/dev_conll.csv")
     
     total_paragraph_df = pd.concat([train_paragraph, dev_paragraph])
     total_sentences_df = pd.concat([train_sentences, dev_sentences])
@@ -270,25 +271,29 @@ def create_train_dev_test(train_filename, dev_filename, labeling):
     random_dev_question_answer_df = total_question_answer_df.loc[[title in dev_titles for title in total_question_answer_df['text_title']]]
     random_test_question_answer_df = total_question_answer_df.loc[[title in test_titles for title in total_question_answer_df['text_title']]]
 
-    random_train_paragraph_df.to_csv("preprocessedData/random_train_paragraph.csv")
-    random_dev_paragraph_df.to_csv("preprocessedData/random_dev_paragraph.csv")
-    random_test_paragraph_df.to_csv("preprocessedData/random_test_paragraph.csv")
+    random_train_paragraph_df.to_csv("01_data/preprocessedData/random_train_paragraph.csv")
+    random_dev_paragraph_df.to_csv("01_data/preprocessedData/random_dev_paragraph.csv")
+    random_test_paragraph_df.to_csv("01_data/preprocessedData/random_test_paragraph.csv")
 
-    random_train_sentences_df.to_csv("preprocessedData/random_train_sentences.csv")
-    random_dev_sentences_df.to_csv("preprocessedData/random_dev_sentences.csv")
-    random_test_sentences_df.to_csv("preprocessedData/random_test_sentences.csv")
+    random_train_sentences_df.to_csv("01_data/preprocessedData/random_train_sentences.csv")
+    random_dev_sentences_df.to_csv("01_data/preprocessedData/random_dev_sentences.csv")
+    random_test_sentences_df.to_csv("01_data/preprocessedData/random_test_sentences.csv")
 
-    random_train_question_df.to_csv("preprocessedData/random_train_question.csv")
-    random_dev_question_df.to_csv("preprocessedData/random_dev_question.csv")
-    random_test_question_df.to_csv("preprocessedData/random_test_question.csv")
+    random_train_question_df.to_csv("01_data/preprocessedData/random_train_question.csv")
+    random_dev_question_df.to_csv("01_data/preprocessedData/random_dev_question.csv")
+    random_test_question_df.to_csv("01_data/preprocessedData/random_test_question.csv")
 
-    random_train_question_answer_df.to_csv("preprocessedData/random_train_question_answer.csv")
-    random_dev_question_answer_df.to_csv("preprocessedData/random_dev_question_answer.csv")
-    random_test_question_answer_df.to_csv("preprocessedData/random_test_question_answer.csv")
+    random_train_question_answer_df.to_csv("01_data/preprocessedData/random_train_question_answer.csv")
+    random_dev_question_answer_df.to_csv("01_data/preprocessedData/random_dev_question_answer.csv")
+    random_test_question_answer_df.to_csv("01_data/preprocessedData/random_test_question_answer.csv")
 
-    create_conll_file(random_train_sentences_df, "preprocessedData/train_conll.csv")
-    create_conll_file(random_dev_sentences_df, "preprocessedData/dev_conll.csv")
-    create_conll_file(random_test_sentences_df, "preprocessedData/test_conll.csv")
+    create_conll_file(random_train_sentences_df, "01_data/preprocessedData/train_conll.csv")
+    create_conll_file(random_dev_sentences_df, "01_data/preprocessedData/dev_conll.csv")
+    create_conll_file(random_test_sentences_df, "01_data/preprocessedData/test_conll.csv")
+
+    create_paragraph_conll_file(random_train_paragraph_df, "01_data/preprocessedData/train_paragraph_conll.csv")
+    create_paragraph_conll_file(random_dev_paragraph_df, "01_data/preprocessedData/dev_paragraph_conll.csv")
+    create_paragraph_conll_file(random_test_paragraph_df, "01_data/preprocessedData/test_paragraph_conll.csv")
 
 def create_question_answer_mapping(question_df):
     mapping_df = {
@@ -332,10 +337,28 @@ def create_conll_file(df_sentences, filename):
         for index, row in df_sentences.iterrows():
             for token, tagging in zip(row["sentence_tokens"], row["askable_tokens"]):
                 f.write("{}\t{}\n".format(token, tagging))
-            f.write("\n")
+            f.write("-DOCSTART- -X- O O\n")
 
-TRAIN_FILENAME = '01_data/rawData/train-v2.0.json'
-DEV_FILENAME = '01_data/rawData/dev-v2.0.json'
+def create_paragraph_conll_file(df_paragraph, filename):
+    with open(filename, "a") as f:
+        for index, row in df_paragraph.iterrows():
+            for token, tagging in zip(row["paragraph_tokens"], row["askable_tokens"]):
+                f.write("{}\t{}\n".format(token, tagging))
+            f.write("-DOCSTART- -X- O O\n")
+
+
+def clean_token(token):
+    token = token.text
+    if token == "":
+        return "<<EMPTY>>"
+    else:
+        token = re.sub("\n", "<<LINEBREAK>>",token)
+        token = re.sub(r"\s", "<<WHITESPACE>>", token)
+        return token
+    
+
+TRAIN_FILENAME = '01_data/quac/train_v0.2.json'
+DEV_FILENAME = '01_data/quac/val_v0.2.json'
 LABELING = "IO"
 
 create_train_dev_test(TRAIN_FILENAME, DEV_FILENAME, LABELING)
