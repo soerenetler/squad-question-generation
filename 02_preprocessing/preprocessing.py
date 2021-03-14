@@ -358,7 +358,7 @@ def clean_token(token):
         return token
     
 
-data_folder = "/content/gdrive/mt-qg-data/"
+data_folder = "/content/gdrive/MyDrive/mt-qg-data/"
 TRAIN_FILENAME =  data_folder + '01_data/rawData/train-v2.0.json'
 DEV_FILENAME = data_folder + '01_data/rawData/dev-v2.0.json'
 LABELING = "IO"
