@@ -6,6 +6,7 @@ from FeatureTransformer import FeatureTransformer
 import pandas as pd
 import ast
 import spacy
+from spacy import displacy
 from Custom import custom_tokenizer
 from sklearn_crfsuite import metrics
 
@@ -34,6 +35,7 @@ def print_text_4_title(df, model, text_title):
   y_true = tmp_df["askable_tokens"]
 
   nlp.tokenizer = custom_tokenizer(tmp_df, nlp)
+  ner_nlp.tokenizer = custom_tokenizer(tmp_df, nlp)
 
   test_features = feature_transformer.transform(tmp_df["sentence_text"])
 
@@ -84,16 +86,25 @@ def print_text_4_title(df, model, text_title):
   </style>
   """, unsafe_allow_html=True)
 
-  for token_list, y_trues, y_preds, test_feature in zip(list(tmp_df["sentence_tokens"]), list(y_true), y_pred_test_marginals, test_features):
+  for sentence_text, token_list, y_trues, y_preds, test_feature in zip(list(tmp_df["sentence_text"]), list(tmp_df["sentence_tokens"]), list(y_true), y_pred_test_marginals, test_features):
       st.write(print_annotated_text(token_list, y_preds, y_trues=y_trues, threshold=threshold, features=test_feature), unsafe_allow_html=True)
+      
+      HTML_WRAPPER = """<div style="overflow-x: auto; border: 1px solid #e6e9ef; border-radius: 0.25rem; padding: 1rem; margin-bottom: 2.5rem">{}</div>"""
+      html = displacy.render(ner_nlp(sentence_text), style="ent")
+      # Newlines seem to mess with the rendering
+      html = html.replace("\n", " ")
+      st.write(HTML_WRAPPER.format(html), unsafe_allow_html=True)
 
 
-nlp = spacy.load('en_core_web_md')
+
+
+nlp = spacy.load('en_core_web_sm')
+ner_nlp = spacy.load('../../../spacy_target_answer/training/model-best')
 
 classification_level = st.radio("level of classification: ", ("sentence", "paragraph"))
 
 if classification_level=="sentence":
-  model = joblib.load('best_estimator.pkl')
+  model = joblib.load('../../best_estimator.pkl')
   TEST_FILENAME = "../../01_data/preprocessedData/random_test_sentences.csv"
   df_test = pd.read_csv(TEST_FILENAME)
   df_test["askable_tokens"] = [ast.literal_eval(t) for t in df_test["askable_tokens"]]

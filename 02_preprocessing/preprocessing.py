@@ -49,6 +49,7 @@ def get_answer_sentence(nlp_paragraph, answer_start, answer_text):
            masked_answer_sentence_token
 
 def read_to_dataframe(filename, labeling, include_plausible_answers=False):
+    spacy.require_gpu()
     nlp = spacy.load('en_core_web_sm')
     parser = CoreNLPParser(url='http://localhost:9000')
 
@@ -357,8 +358,8 @@ def clean_token(token):
         return token
     
 
-TRAIN_FILENAME = '01_data/quac/train_v0.2.json'
-DEV_FILENAME = '01_data/quac/val_v0.2.json'
+TRAIN_FILENAME = '01_data/rawData/train-v2.0.json'
+DEV_FILENAME = '01_data/rawData/dev-v2.0.json'
 LABELING = "IO"
 
 create_train_dev_test(TRAIN_FILENAME, DEV_FILENAME, LABELING)
