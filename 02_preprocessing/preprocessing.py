@@ -231,20 +231,20 @@ def create_train_dev_test(train_filename, dev_filename, labeling):
     dev_paragraph, dev_sentences, dev_questions = read_to_dataframe(dev_filename, labeling, include_plausible_answers=True)
     dev_question_answer = create_question_answer_mapping(dev_questions)
     
-    train_paragraph.to_csv("01_data/preprocessedData/train_paragraph.csv")
-    dev_paragraph.to_csv("01_data/preprocessedData/dev_paragraph.csv")
+    train_paragraph.to_csv(data_folder + "01_data/preprocessedData/train_paragraph.csv")
+    dev_paragraph.to_csv(data_folder + "01_data/preprocessedData/dev_paragraph.csv")
     
-    train_questions.to_csv("01_data/preprocessedData/train_questions.csv")
-    dev_questions.to_csv("01_data/preprocessedData/dev_questions.csv")
+    train_questions.to_csv(data_folder + "01_data/preprocessedData/train_questions.csv")
+    dev_questions.to_csv(data_folder + "01_data/preprocessedData/dev_questions.csv")
     
-    train_sentences.to_csv("01_data/preprocessedData/train_sentences.csv")
-    dev_sentences.to_csv("01_data/preprocessedData/dev_sentences.csv")
+    train_sentences.to_csv(data_folder + "01_data/preprocessedData/train_sentences.csv")
+    dev_sentences.to_csv(data_folder + "01_data/preprocessedData/dev_sentences.csv")
 
-    train_question_answer.to_csv("01_data/preprocessedData/train_question_answer_mapping.csv")
-    dev_question_answer.to_csv("01_data/preprocessedData/dev_question_answer_mapping.csv")
+    train_question_answer.to_csv(data_folder + "01_data/preprocessedData/train_question_answer_mapping.csv")
+    dev_question_answer.to_csv(data_folder + "01_data/preprocessedData/dev_question_answer_mapping.csv")
     
-    create_conll_file(train_sentences, "01_data/preprocessedData/train_conll.csv")
-    create_conll_file(dev_sentences, "01_data/preprocessedData/dev_conll.csv")
+    create_conll_file(train_sentences, data_folder + "01_data/preprocessedData/train_conll.csv")
+    create_conll_file(dev_sentences, data_folder + "01_data/preprocessedData/dev_conll.csv")
     
     total_paragraph_df = pd.concat([train_paragraph, dev_paragraph])
     total_sentences_df = pd.concat([train_sentences, dev_sentences])
@@ -272,29 +272,29 @@ def create_train_dev_test(train_filename, dev_filename, labeling):
     random_dev_question_answer_df = total_question_answer_df.loc[[title in dev_titles for title in total_question_answer_df['text_title']]]
     random_test_question_answer_df = total_question_answer_df.loc[[title in test_titles for title in total_question_answer_df['text_title']]]
 
-    random_train_paragraph_df.to_csv("01_data/preprocessedData/random_train_paragraph.csv")
-    random_dev_paragraph_df.to_csv("01_data/preprocessedData/random_dev_paragraph.csv")
-    random_test_paragraph_df.to_csv("01_data/preprocessedData/random_test_paragraph.csv")
+    random_train_paragraph_df.to_csv(data_folder + "01_data/preprocessedData/random_train_paragraph.csv")
+    random_dev_paragraph_df.to_csv(data_folder + "01_data/preprocessedData/random_dev_paragraph.csv")
+    random_test_paragraph_df.to_csv(data_folder + "01_data/preprocessedData/random_test_paragraph.csv")
 
-    random_train_sentences_df.to_csv("01_data/preprocessedData/random_train_sentences.csv")
-    random_dev_sentences_df.to_csv("01_data/preprocessedData/random_dev_sentences.csv")
-    random_test_sentences_df.to_csv("01_data/preprocessedData/random_test_sentences.csv")
+    random_train_sentences_df.to_csv(data_folder + "01_data/preprocessedData/random_train_sentences.csv")
+    random_dev_sentences_df.to_csv(data_folder + "01_data/preprocessedData/random_dev_sentences.csv")
+    random_test_sentences_df.to_csv(data_folder + "01_data/preprocessedData/random_test_sentences.csv")
 
-    random_train_question_df.to_csv("01_data/preprocessedData/random_train_question.csv")
-    random_dev_question_df.to_csv("01_data/preprocessedData/random_dev_question.csv")
-    random_test_question_df.to_csv("01_data/preprocessedData/random_test_question.csv")
+    random_train_question_df.to_csv(data_folder + "01_data/preprocessedData/random_train_question.csv")
+    random_dev_question_df.to_csv(data_folder + "01_data/preprocessedData/random_dev_question.csv")
+    random_test_question_df.to_csv(data_folder + "01_data/preprocessedData/random_test_question.csv")
 
-    random_train_question_answer_df.to_csv("01_data/preprocessedData/random_train_question_answer.csv")
-    random_dev_question_answer_df.to_csv("01_data/preprocessedData/random_dev_question_answer.csv")
-    random_test_question_answer_df.to_csv("01_data/preprocessedData/random_test_question_answer.csv")
+    random_train_question_answer_df.to_csv(data_folder + "01_data/preprocessedData/random_train_question_answer.csv")
+    random_dev_question_answer_df.to_csv(data_folder + "01_data/preprocessedData/random_dev_question_answer.csv")
+    random_test_question_answer_df.to_csv(data_folder + "01_data/preprocessedData/random_test_question_answer.csv")
 
-    create_conll_file(random_train_sentences_df, "01_data/preprocessedData/train_conll.csv")
-    create_conll_file(random_dev_sentences_df, "01_data/preprocessedData/dev_conll.csv")
-    create_conll_file(random_test_sentences_df, "01_data/preprocessedData/test_conll.csv")
+    create_conll_file(random_train_sentences_df, data_folder + "01_data/preprocessedData/train_conll.csv")
+    create_conll_file(random_dev_sentences_df, data_folder + "01_data/preprocessedData/dev_conll.csv")
+    create_conll_file(random_test_sentences_df, data_folder + "01_data/preprocessedData/test_conll.csv")
 
-    create_paragraph_conll_file(random_train_paragraph_df, "01_data/preprocessedData/train_paragraph_conll.csv")
-    create_paragraph_conll_file(random_dev_paragraph_df, "01_data/preprocessedData/dev_paragraph_conll.csv")
-    create_paragraph_conll_file(random_test_paragraph_df, "01_data/preprocessedData/test_paragraph_conll.csv")
+    create_paragraph_conll_file(random_train_paragraph_df, data_folder + "01_data/preprocessedData/train_paragraph_conll.csv")
+    create_paragraph_conll_file(random_dev_paragraph_df, data_folder + "01_data/preprocessedData/dev_paragraph_conll.csv")
+    create_paragraph_conll_file(random_test_paragraph_df, data_folder + "01_data/preprocessedData/test_paragraph_conll.csv")
 
 def create_question_answer_mapping(question_df):
     mapping_df = {
@@ -358,8 +358,9 @@ def clean_token(token):
         return token
     
 
-TRAIN_FILENAME = '01_data/rawData/train-v2.0.json'
-DEV_FILENAME = '01_data/rawData/dev-v2.0.json'
+data_folder = "/content/gdrive/mt-qg-data/"
+TRAIN_FILENAME =  data_folder + '01_data/rawData/train-v2.0.json'
+DEV_FILENAME = data_folder + '01_data/rawData/dev-v2.0.json'
 LABELING = "IO"
 
 create_train_dev_test(TRAIN_FILENAME, DEV_FILENAME, LABELING)
