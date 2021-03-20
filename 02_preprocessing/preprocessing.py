@@ -240,42 +240,42 @@ def create_train_dev_test(train_filename, dev_filename, labeling):
     unique_text_titles = train_paragraph['text_title'].unique()
     dev_titles, test_titles = train_test_split(unique_text_titles, test_size=0.2, random_state=1)
     
-    delete_files_in_folderfileList = glob.glob(data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph/*')
+    delete_files_in_folderfileList = glob.glob(data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph/*")
     train_train_paragraph = train_paragraph.loc[[title in train_titles for title in train_paragraph['text_title']]]
     train_dev_paragraph = train_paragraph.loc[[title in dev_titles for title in train_paragraph['text_title']]]
     train_train_paragraph.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph/train.csv")
     train_dev_paragraph.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph/dev.csv")
     dev_paragraph.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph/test.csv")
     
-    delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/questions/*')
+    delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/questions/*")
     train_train_questions = train_questions.loc[[title in train_titles for title in train_questions['text_title']]]
     train_dev_questions = train_questions.loc[[title in dev_titles for title in train_questions['text_title']]]
     train_train_questions.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/questions/train.csv")
     train_dev_questions.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/questions/dev.csv")
     dev_questions.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/questions/test.csv")
     
-    delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/sentences/*')
+    delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/sentences/*")
     train_train_sentences = train_sentences.loc[[title in train_titles for title in train_sentences['text_title']]]
     train_dev_sentences = train_sentences.loc[[title in dev_titles for title in train_sentences['text_title']]]
     train_train_sentences.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/sentences/train.csv")
     train_dev_sentences.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/sentences/dev.csv")
     dev_sentences.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/sentences/test.csv")
 
-    delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/question_answer/*')
+    delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/question_answer/*")
     train_train_question_answer = train_question_answer.loc[[title in train_titles for title in train_question_answer['text_title']]]
     train_dev_question_answer = train_question_answer.loc[[title in dev_titles for title in train_question_answer['text_title']]]
     train_train_question_answer.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/question_answer/train.csv")
     train_dev_question_answer.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/question_answer/dev.csv")
     dev_question_answer.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/question_answer/test.csv")
     
-    delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/sentences_conll/*')
+    delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/sentences_conll/*")
     train_train_sentences = train_sentences.loc[[title in train_titles for title in train_sentences['text_title']]]
     train_dev_sentences = train_sentences.loc[[title in dev_titles for title in train_sentences['text_title']]]
     create_conll_file(train_train_sentences, data_folder + "01_data/preprocessedData/"+ dataset +"/sentences_conll/train.conll")
     create_conll_file(train_dev_sentences, data_folder + "01_data/preprocessedData/"+ dataset +"/sentences_conll/dev.conll")
     create_conll_file(dev_sentences, data_folder + "01_data/preprocessedData/"+ dataset +"/sentences_conll/test.conll")
 
-    delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph_conll/*')
+    delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph_conll/*")
     train_train_paragraph = train_paragraph.loc[[title in train_titles for title in train_paragraph['text_title']]]
     train_dev_paragraph = train_paragraph.loc[[title in dev_titles for title in train_paragraph['text_title']]]
     create_conll_file(train_train_paragraph, data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph_conll/train.conll")
