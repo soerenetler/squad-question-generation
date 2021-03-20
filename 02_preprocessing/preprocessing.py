@@ -344,7 +344,7 @@ def create_conll_file(df_sentences, filename):
     with open(filename, "a") as f:
         previous_paragraph_id = ""
         for index, row in df_sentences.iterrows():
-            elif row["paragraph_id"] != previous_paragraph_id:
+            if row["paragraph_id"] != previous_paragraph_id:
                 f.write("-DOCSTART- -X- O O\n")
             
             f.write("\n")
