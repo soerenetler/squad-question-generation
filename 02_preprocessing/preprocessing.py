@@ -7,6 +7,7 @@ import pickle
 from sklearn.model_selection import train_test_split
 from nltk.parse import CoreNLPParser
 import re
+import hashlib
 
 def get_answer_sentence(nlp_paragraph, answer_start, answer_text):
     length = len(answer_text)
@@ -59,6 +60,7 @@ def read_to_dataframe(filename, labeling, include_plausible_answers=False):
                     "askable_tokens":[]}
     
     df_sentences = {"text_title":[],
+                    "paragraph_id":[],
                     "sentence_text":[],
                     "sentence_tokens":[],
                     "askable_tokens":[],
@@ -97,6 +99,7 @@ def read_to_dataframe(filename, labeling, include_plausible_answers=False):
             text_title = text['title']
             for paragraph in text['paragraphs']:
                 paragraph_text = paragraph['context']
+                paragraph_id = hashlib.sha224(paragraph_text).hexdigest()
                 nlp_paragraph = nlp(paragraph_text)
                 paragraph_tokens = [clean_token(t) for t in nlp_paragraph]
                 askable_tokens = ["O"]*len(nlp_paragraph)
@@ -215,6 +218,7 @@ def read_to_dataframe(filename, labeling, include_plausible_answers=False):
 
                 for sentence in nlp_paragraph.doc.sents:
                     df_sentences['text_title'].append(text_title)
+                    df_sentences['paragraph_id'].append(paragraph_id)
                     df_sentences['sentence_text'].append(re.sub("\n", "<<LINEBREAK>>", sentence.text))
                     df_sentences['sentence_tokens'].append(paragraph_tokens[sentence.start:sentence.end])
                     df_sentences['askable_tokens'].append(askable_tokens[sentence.start:sentence.end])
@@ -245,6 +249,9 @@ def create_train_dev_test(train_filename, dev_filename, labeling):
     
     create_conll_file(train_sentences, data_folder + "01_data/preprocessedData/"+ dataset +"/sentences_conll/train.conll")
     create_conll_file(dev_sentences, data_folder + "01_data/preprocessedData/"+ dataset +"/sentences_conll/dev.conll")
+
+    create_paragraph_conll_file(train_paragraph, data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph_conll/train.conll")
+    create_paragraph_conll_file(dev_paragraph, data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph_conll/dev.conll")
     
     total_paragraph_df = pd.concat([train_paragraph, dev_paragraph])
     total_sentences_df = pd.concat([train_sentences, dev_sentences])
@@ -335,10 +342,15 @@ def create_question_answer_mapping(question_df):
 
 def create_conll_file(df_sentences, filename):
     with open(filename, "a") as f:
+        previous_paragraph_id = ""
         for index, row in df_sentences.iterrows():
+            elif row["paragraph_id"] != previous_paragraph_id:
+                f.write("-DOCSTART- -X- O O\n")
+            
+            f.write("\n")
+            previous_paragraph_id =row["paragraph_id"]
             for token, tagging in zip(row["sentence_tokens"], row["askable_tokens"]):
                 f.write("{}\t{}\n".format(token, tagging))
-            f.write("-DOCSTART- -X- O O\n")
 
 def create_paragraph_conll_file(df_paragraph, filename):
     with open(filename, "a") as f:
