@@ -236,87 +236,52 @@ def create_train_dev_test(train_filename, dev_filename, labeling):
     
     dev_paragraph, dev_sentences, dev_questions = read_to_dataframe(dev_filename, labeling, include_plausible_answers=True)
     dev_question_answer = create_question_answer_mapping(dev_questions)
+
+    unique_text_titles = train_paragraph['text_title'].unique()
+    dev_titles, test_titles = train_test_split(unique_text_titles, test_size=0.2, random_state=1)
     
     delete_files_in_folderfileList = glob.glob(data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph/*')
-    train_paragraph.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph/train.csv")
-    dev_paragraph.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph/dev.csv")
+    train_train_paragraph = train_paragraph.loc[[title in train_titles for title in train_paragraph['text_title']]]
+    train_dev_paragraph = train_paragraph.loc[[title in dev_titles for title in train_paragraph['text_title']]]
+    train_train_paragraph.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph/train.csv")
+    train_dev_paragraph.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph/dev.csv")
+    dev_paragraph.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph/test.csv")
     
     delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/questions/*')
-    train_questions.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/questions/train.csv")
-    dev_questions.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/questions/dev.csv")
+    train_train_questions = train_questions.loc[[title in train_titles for title in train_questions['text_title']]]
+    train_dev_questions = train_questions.loc[[title in dev_titles for title in train_questions['text_title']]]
+    train_train_questions.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/questions/train.csv")
+    train_dev_questions.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/questions/dev.csv")
+    dev_questions.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/questions/test.csv")
     
     delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/sentences/*')
-    train_sentences.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/sentences/train.csv")
-    dev_sentences.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/sentences/dev.csv")
+    train_train_sentences = train_sentences.loc[[title in train_titles for title in train_sentences['text_title']]]
+    train_dev_sentences = train_sentences.loc[[title in dev_titles for title in train_sentences['text_title']]]
+    train_train_sentences.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/sentences/train.csv")
+    train_dev_sentences.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/sentences/dev.csv")
+    dev_sentences.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/sentences/test.csv")
 
     delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/question_answer/*')
-    train_question_answer.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/question_answer/train.csv")
-    dev_question_answer.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/question_answer/dev.csv")
+    train_train_question_answer = train_question_answer.loc[[title in train_titles for title in train_question_answer['text_title']]]
+    train_dev_question_answer = train_question_answer.loc[[title in dev_titles for title in train_question_answer['text_title']]]
+    train_train_question_answer.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/question_answer/train.csv")
+    train_dev_question_answer.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/question_answer/dev.csv")
+    dev_question_answer.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/question_answer/test.csv")
     
     delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/sentences_conll/*')
-    create_conll_file(train_sentences, data_folder + "01_data/preprocessedData/"+ dataset +"/sentences_conll/train.conll")
-    create_conll_file(dev_sentences, data_folder + "01_data/preprocessedData/"+ dataset +"/sentences_conll/dev.conll")
+    train_train_sentences = train_sentences.loc[[title in train_titles for title in train_sentences['text_title']]]
+    train_dev_sentences = train_sentences.loc[[title in dev_titles for title in train_sentences['text_title']]]
+    create_conll_file(train_train_sentences, data_folder + "01_data/preprocessedData/"+ dataset +"/sentences_conll/train.conll")
+    create_conll_file(train_dev_sentences, data_folder + "01_data/preprocessedData/"+ dataset +"/sentences_conll/dev.conll")
+    create_conll_file(dev_sentences, data_folder + "01_data/preprocessedData/"+ dataset +"/sentences_conll/test.conll")
 
     delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph_conll/*')
-    create_paragraph_conll_file(train_paragraph, data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph_conll/train.conll")
+    train_train_paragraph = train_paragraph.loc[[title in train_titles for title in train_paragraph['text_title']]]
+    train_dev_paragraph = train_paragraph.loc[[title in dev_titles for title in train_paragraph['text_title']]]
+    create_conll_file(train_train_paragraph, data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph_conll/train.conll")
+    create_conll_file(train_dev_paragraph, data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph_conll/dev.conll")
     create_paragraph_conll_file(dev_paragraph, data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph_conll/dev.conll")
     
-    total_paragraph_df = pd.concat([train_paragraph, dev_paragraph])
-    total_sentences_df = pd.concat([train_sentences, dev_sentences])
-    total_question_df = pd.concat([train_questions, dev_questions])
-    total_question_answer_df = pd.concat([train_question_answer, dev_question_answer])
-    
-    unique_text_titles = total_paragraph_df['text_title'].unique()
-
-    train_dev_titles, test_titles = train_test_split(unique_text_titles, test_size=0.2, random_state=1)
-    train_titles, dev_titles = train_test_split(train_dev_titles, test_size=0.25, random_state=1)
-
-    random_train_paragraph_df = total_paragraph_df.loc[[title in train_titles for title in total_paragraph_df['text_title']]]
-    random_dev_paragraph_df = total_paragraph_df.loc[[title in dev_titles for title in total_paragraph_df['text_title']]]
-    random_test_paragraph_df = total_paragraph_df.loc[[title in test_titles for title in total_paragraph_df['text_title']]]
-
-    random_train_sentences_df = total_sentences_df.loc[[title in train_titles for title in total_sentences_df['text_title']]]
-    random_dev_sentences_df = total_sentences_df.loc[[title in dev_titles for title in total_sentences_df['text_title']]]
-    random_test_sentences_df = total_sentences_df.loc[[title in test_titles for title in total_sentences_df['text_title']]]
-
-    random_train_question_df = total_question_df.loc[[title in train_titles for title in total_question_df['text_title']]]
-    random_dev_question_df = total_question_df.loc[[title in dev_titles for title in total_question_df['text_title']]]
-    random_test_question_df = total_question_df.loc[[title in test_titles for title in total_question_df['text_title']]]
-
-    random_train_question_answer_df = total_question_answer_df.loc[[title in train_titles for title in total_question_answer_df['text_title']]]
-    random_dev_question_answer_df = total_question_answer_df.loc[[title in dev_titles for title in total_question_answer_df['text_title']]]
-    random_test_question_answer_df = total_question_answer_df.loc[[title in test_titles for title in total_question_answer_df['text_title']]]
-
-    delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/random_paragraph/*')
-    random_train_paragraph_df.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/random_paragraph/train.csv")
-    random_dev_paragraph_df.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/random_paragraph/dev.csv")
-    random_test_paragraph_df.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/random_paragraph/test.csv")
-
-    delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/random_sentences/*')
-    random_train_sentences_df.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/random_sentences/train.csv")
-    random_dev_sentences_df.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/random_sentences/dev.csv")
-    random_test_sentences_df.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/random_sentences/test.csv")
-
-    delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/random_question/*')
-    random_train_question_df.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/random_question/train.csv")
-    random_dev_question_df.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/random_question/dev.csv")
-    random_test_question_df.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/random_question/test.csv")
-
-    delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/random_question_answer/*')
-    random_train_question_answer_df.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/random_question_answer/train.csv")
-    random_dev_question_answer_df.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/random_question_answer/dev.csv")
-    random_test_question_answer_df.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/random_question_answer/test.csv")
-
-    delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/random_sentences_conll/*')
-    create_conll_file(random_train_sentences_df, data_folder + "01_data/preprocessedData/"+ dataset +"/random_sentences_conll/train.conll")
-    create_conll_file(random_dev_sentences_df, data_folder + "01_data/preprocessedData/"+ dataset +"/random_sentences_conll/dev.conll")
-    create_conll_file(random_test_sentences_df, data_folder + "01_data/preprocessedData/"+ dataset +"/random_sentences_conll/test.conll")
-
-    delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/random_paragraph_conll/*')
-    create_paragraph_conll_file(random_train_paragraph_df, data_folder + "01_data/preprocessedData/"+ dataset +"/random_paragraph_conll/train.conll")
-    create_paragraph_conll_file(random_dev_paragraph_df, data_folder + "01_data/preprocessedData/"+ dataset +"/random_paragraph_conll/dev.conll")
-    create_paragraph_conll_file(random_test_paragraph_df, data_folder + "01_data/preprocessedData/"+ dataset +"/random_paragraph_conll/test.conll")
-
 def delete_files_in_folder(folder_path):
     fileList = glob.glob(folder_path)
     for filePath in fileList:
