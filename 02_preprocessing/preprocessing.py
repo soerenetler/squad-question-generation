@@ -299,9 +299,9 @@ def create_train_dev_test(train_filename, dev_filename, labeling):
     create_conll_file(random_dev_sentences_df, data_folder + "01_data/preprocessedData/"+ dataset +"/random_sentences_conll/dev.conll")
     create_conll_file(random_test_sentences_df, data_folder + "01_data/preprocessedData/"+ dataset +"/random_sentences_conll/test.conll")
 
-    create_paragraph_conll_file(random_train_paragraph_df, data_folder + "01_data/preprocessedData/"+ dataset +"/randon_paragraph_conll/train.conll")
-    create_paragraph_conll_file(random_dev_paragraph_df, data_folder + "01_data/preprocessedData/"+ dataset +"/randon_paragraph_conll/dev.conll")
-    create_paragraph_conll_file(random_test_paragraph_df, data_folder + "01_data/preprocessedData/"+ dataset +"/randon_paragraph_conll/test.conll")
+    create_paragraph_conll_file(random_train_paragraph_df, data_folder + "01_data/preprocessedData/"+ dataset +"/random_paragraph_conll/train.conll")
+    create_paragraph_conll_file(random_dev_paragraph_df, data_folder + "01_data/preprocessedData/"+ dataset +"/random_paragraph_conll/dev.conll")
+    create_paragraph_conll_file(random_test_paragraph_df, data_folder + "01_data/preprocessedData/"+ dataset +"/random_paragraph_conll/test.conll")
 
 def create_question_answer_mapping(question_df):
     mapping_df = {
