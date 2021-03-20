@@ -8,6 +8,8 @@ from sklearn.model_selection import train_test_split
 from nltk.parse import CoreNLPParser
 import re
 import hashlib
+import os
+import glob
 
 def get_answer_sentence(nlp_paragraph, answer_start, answer_text):
     length = len(answer_text)
@@ -235,21 +237,27 @@ def create_train_dev_test(train_filename, dev_filename, labeling):
     dev_paragraph, dev_sentences, dev_questions = read_to_dataframe(dev_filename, labeling, include_plausible_answers=True)
     dev_question_answer = create_question_answer_mapping(dev_questions)
     
+    delete_files_in_folderfileList = glob.glob(data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph/*')
     train_paragraph.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph/train.csv")
     dev_paragraph.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph/dev.csv")
     
+    delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/questions/*')
     train_questions.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/questions/train.csv")
     dev_questions.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/questions/dev.csv")
     
+    delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/sentences/*')
     train_sentences.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/sentences/train.csv")
     dev_sentences.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/sentences/dev.csv")
 
+    delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/question_answer/*')
     train_question_answer.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/question_answer/train.csv")
     dev_question_answer.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/question_answer/dev.csv")
     
+    delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/sentences_conll/*')
     create_conll_file(train_sentences, data_folder + "01_data/preprocessedData/"+ dataset +"/sentences_conll/train.conll")
     create_conll_file(dev_sentences, data_folder + "01_data/preprocessedData/"+ dataset +"/sentences_conll/dev.conll")
 
+    delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph_conll/*')
     create_paragraph_conll_file(train_paragraph, data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph_conll/train.conll")
     create_paragraph_conll_file(dev_paragraph, data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph_conll/dev.conll")
     
@@ -279,29 +287,43 @@ def create_train_dev_test(train_filename, dev_filename, labeling):
     random_dev_question_answer_df = total_question_answer_df.loc[[title in dev_titles for title in total_question_answer_df['text_title']]]
     random_test_question_answer_df = total_question_answer_df.loc[[title in test_titles for title in total_question_answer_df['text_title']]]
 
+    delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/random_paragraph/*')
     random_train_paragraph_df.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/random_paragraph/train.csv")
     random_dev_paragraph_df.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/random_paragraph/dev.csv")
     random_test_paragraph_df.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/random_paragraph/test.csv")
 
+    delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/random_sentences/*')
     random_train_sentences_df.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/random_sentences/train.csv")
     random_dev_sentences_df.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/random_sentences/dev.csv")
     random_test_sentences_df.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/random_sentences/test.csv")
 
+    delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/random_question/*')
     random_train_question_df.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/random_question/train.csv")
     random_dev_question_df.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/random_question/dev.csv")
     random_test_question_df.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/random_question/test.csv")
 
+    delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/random_question_answer/*')
     random_train_question_answer_df.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/random_question_answer/train.csv")
     random_dev_question_answer_df.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/random_question_answer/dev.csv")
     random_test_question_answer_df.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/random_question_answer/test.csv")
 
+    delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/random_sentences_conll/*')
     create_conll_file(random_train_sentences_df, data_folder + "01_data/preprocessedData/"+ dataset +"/random_sentences_conll/train.conll")
     create_conll_file(random_dev_sentences_df, data_folder + "01_data/preprocessedData/"+ dataset +"/random_sentences_conll/dev.conll")
     create_conll_file(random_test_sentences_df, data_folder + "01_data/preprocessedData/"+ dataset +"/random_sentences_conll/test.conll")
 
+    delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/random_paragraph_conll/*')
     create_paragraph_conll_file(random_train_paragraph_df, data_folder + "01_data/preprocessedData/"+ dataset +"/random_paragraph_conll/train.conll")
     create_paragraph_conll_file(random_dev_paragraph_df, data_folder + "01_data/preprocessedData/"+ dataset +"/random_paragraph_conll/dev.conll")
     create_paragraph_conll_file(random_test_paragraph_df, data_folder + "01_data/preprocessedData/"+ dataset +"/random_paragraph_conll/test.conll")
+
+def delete_files_in_folder(folder_path):
+    fileList = glob.glob(folder_path)
+    for filePath in fileList:
+        try:
+            os.remove(filePath)
+        except:
+            print("Error while deleting file : ", filePath)
 
 def create_question_answer_mapping(question_df):
     mapping_df = {
@@ -348,7 +370,7 @@ def create_conll_file(df_sentences, filename):
                 f.write("-DOCSTART- -X- O O\n")
             
             f.write("\n")
-            previous_paragraph_id =row["paragraph_id"]
+            previous_paragraph_id = row["paragraph_id"]
             for token, tagging in zip(row["sentence_tokens"], row["askable_tokens"]):
                 f.write("{}\t{}\n".format(token, tagging))
 
