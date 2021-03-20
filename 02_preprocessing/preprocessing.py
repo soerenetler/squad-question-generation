@@ -238,7 +238,7 @@ def create_train_dev_test(train_filename, dev_filename, labeling):
     dev_question_answer = create_question_answer_mapping(dev_questions)
 
     unique_text_titles = train_paragraph['text_title'].unique()
-    dev_titles, test_titles = train_test_split(unique_text_titles, test_size=0.2, random_state=1)
+    train_titles, dev_titles = train_test_split(unique_text_titles, test_size=0.2, random_state=1)
     
     delete_files_in_folderfileList = glob.glob(data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph/*")
     train_train_paragraph = train_paragraph.loc[[title in train_titles for title in train_paragraph['text_title']]]
