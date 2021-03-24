@@ -219,13 +219,14 @@ def read_to_dataframe(filename, labeling, include_plausible_answers=False):
                                                                     
 
                 for sentence in nlp_paragraph.doc.sents:
-                    df_sentences['text_title'].append(text_title)
-                    df_sentences['paragraph_id'].append(paragraph_id)
-                    df_sentences['sentence_text'].append(re.sub("\n", "<<LINEBREAK>>", sentence.text))
-                    df_sentences['sentence_tokens'].append(paragraph_tokens[sentence.start:sentence.end])
-                    df_sentences['askable_tokens'].append(askable_tokens[sentence.start:sentence.end])
-                    df_sentences['sentence_start'].append(sentence.start)
-                    df_sentences['sentence_end'].append(sentence.end)
+                    if set(t.text for t in paragraph_tokens[sentence.start:sentence.end]]) in set(['<<WHITESPACE>>', 'CANNOTANSWER']):
+                        df_sentences['text_title'].append(text_title)
+                        df_sentences['paragraph_id'].append(paragraph_id)
+                        df_sentences['sentence_text'].append(re.sub("\n", "<<LINEBREAK>>", sentence.text))
+                        df_sentences['sentence_tokens'].append(paragraph_tokens[sentence.start:sentence.end])
+                        df_sentences['askable_tokens'].append(askable_tokens[sentence.start:sentence.end])
+                        df_sentences['sentence_start'].append(sentence.start)
+                        df_sentences['sentence_end'].append(sentence.end)
 
     return pd.DataFrame(data=df_paragraph), pd.DataFrame(data=df_sentences), pd.DataFrame(data=df_question)
 
