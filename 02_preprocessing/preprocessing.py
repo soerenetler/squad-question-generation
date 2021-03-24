@@ -219,7 +219,7 @@ def read_to_dataframe(filename, labeling, include_plausible_answers=False):
                                                                     
 
                 for sentence in nlp_paragraph.doc.sents:
-                    if not set(paragraph_tokens[sentence.start:sentence.end])issubset(set(['<<WHITESPACE>>', 'CANNOTANSWER'])):
+                    if not set(paragraph_tokens[sentence.start:sentence.end]).issubset(set(['<<WHITESPACE>>', 'CANNOTANSWER'])):
                         df_sentences['text_title'].append(text_title)
                         df_sentences['paragraph_id'].append(paragraph_id)
                         df_sentences['sentence_text'].append(re.sub("\n", "<<LINEBREAK>>", sentence.text))
