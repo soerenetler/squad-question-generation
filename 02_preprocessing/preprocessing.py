@@ -312,19 +312,20 @@ def create_question_answer_mapping(question_df):
         text_title = row["text_title"]
 
         for answer_text, correct_answer_sentence, correct_answer_sentence_token, masked_answer_text, masked_answer_sentence in zip(row["correct_answer_text"], row["correct_answer_sentence"], row["correct_answer_sentence_token"], row["correct_masked_answer_text_token"], row["correct_masked_answer_sentence_token"]):
-            mapping_df["text_title"].append(text_title)
-            mapping_df["question_text"].append(row["question_text"])
-            mapping_df["question_token"].append(row["question_token"])
-            mapping_df["question_pos"].append(row["question_pos"])
-            mapping_df["question_tag"].append(row["question_tag"])
-            mapping_df["question_parse_tree"].append(row["question_parse_tree"])
-            mapping_df["answer_sentence"].append(correct_answer_sentence)
-            mapping_df["answer_sentence_token"].append(correct_answer_sentence_token)
-            mapping_df["answer_paragraph"].append(paragraph_text)
-            mapping_df["masked_answer_paragraph"].append(masked_answer_text)
-            mapping_df["masked_answer_sentence"].append(masked_answer_sentence)
-            mapping_df["answer"].append(answer_text)
-            mapping_df["unanswerable"].append(False)
+            if not set(correct_answer_sentence_token).issubset(set(['<<WHITESPACE>>', 'CANNOTANSWER'])):
+                mapping_df["text_title"].append(text_title)
+                mapping_df["question_text"].append(row["question_text"])
+                mapping_df["question_token"].append(row["question_token"])
+                mapping_df["question_pos"].append(row["question_pos"])
+                mapping_df["question_tag"].append(row["question_tag"])
+                mapping_df["question_parse_tree"].append(row["question_parse_tree"])
+                mapping_df["answer_sentence"].append(correct_answer_sentence)
+                mapping_df["answer_sentence_token"].append(correct_answer_sentence_token)
+                mapping_df["answer_paragraph"].append(paragraph_text)
+                mapping_df["masked_answer_paragraph"].append(masked_answer_text)
+                mapping_df["masked_answer_sentence"].append(masked_answer_sentence)
+                mapping_df["answer"].append(answer_text)
+                mapping_df["unanswerable"].append(False)
 
     return pd.DataFrame(data=mapping_df)
 
