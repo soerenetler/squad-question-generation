@@ -358,11 +358,19 @@ def clean_token(token):
         token = re.sub(r"\s", "<<WHITESPACE>>", token)
         return token
     
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Preprocessing')
+    parser.add_argument('--data-folder',  dest='data', metavar='d', type=str, default="/content/gdrive/MyDrive/mt-qg-data/", 
+                        help='number om samples')
+    parser.add_argument('--dataset',  dest='dataset', metavar='a', type=str, default="squad", 
+                        help='number om samples')
 
-data_folder = "/content/gdrive/MyDrive/mt-qg-data/"
-dataset = "quac"
-TRAIN_FILENAME =  data_folder + '01_data/rawData/'+ dataset +'/train.json'
-DEV_FILENAME = data_folder + '01_data/rawData/'+ dataset +'/dev.json'
-LABELING = "IO"
+    args = parser.parse_args()
 
-create_train_dev_test(TRAIN_FILENAME, DEV_FILENAME, LABELING)
+    data_folder = args.data
+    dataset = args.dataset
+    TRAIN_FILENAME =  data_folder + '01_data/rawData/'+ dataset +'/train.json'
+    DEV_FILENAME = data_folder + '01_data/rawData/'+ dataset +'/dev.json'
+    LABELING = "IO"
+
+    create_train_dev_test(TRAIN_FILENAME, DEV_FILENAME, LABELING)
