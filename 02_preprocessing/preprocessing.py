@@ -243,11 +243,15 @@ def create_train_dev_test(train_filename, dev_filename, labeling):
     train_titles, dev_titles = train_test_split(unique_text_titles, test_size=0.2, random_state=1)
     
     delete_files_in_folderfileList = glob.glob(data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph/*")
+    delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph_conll/*")
     train_train_paragraph = train_paragraph.loc[[title in train_titles for title in train_paragraph['text_title']]]
     train_dev_paragraph = train_paragraph.loc[[title in dev_titles for title in train_paragraph['text_title']]]
     train_train_paragraph.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph/train.csv")
     train_dev_paragraph.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph/dev.csv")
     dev_paragraph.to_csv(data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph/test.csv")
+    create_paragraph_conll_file(train_train_paragraph, data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph_conll/train.conll")
+    create_paragraph_conll_file(train_dev_paragraph, data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph_conll/dev.conll")
+    create_paragraph_conll_file(dev_paragraph, data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph_conll/test.conll")
     
     delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/questions/*")
     train_train_questions = train_questions.loc[[title in train_titles for title in train_questions['text_title']]]
@@ -277,12 +281,6 @@ def create_train_dev_test(train_filename, dev_filename, labeling):
     create_conll_file(train_dev_sentences, data_folder + "01_data/preprocessedData/"+ dataset +"/sentences_conll/dev.conll")
     create_conll_file(dev_sentences, data_folder + "01_data/preprocessedData/"+ dataset +"/sentences_conll/test.conll")
 
-    delete_files_in_folder(data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph_conll/*")
-    train_train_paragraph = train_paragraph.loc[[title in train_titles for title in train_paragraph['text_title']]]
-    train_dev_paragraph = train_paragraph.loc[[title in dev_titles for title in train_paragraph['text_title']]]
-    create_paragraph_conll_file(train_train_paragraph, data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph_conll/train.conll")
-    create_paragraph_conll_file(train_dev_paragraph, data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph_conll/dev.conll")
-    create_paragraph_conll_file(dev_paragraph, data_folder + "01_data/preprocessedData/"+ dataset +"/paragraph_conll/dev.conll")
     
 def delete_files_in_folder(folder_path):
     fileList = glob.glob(folder_path)

@@ -21,8 +21,6 @@ from sklearn.pipeline import Pipeline
 from Custom import *
 
 if __name__ == "__main__":
-    NO_SAMPLES=100
-
     TRAIN_FILENAME = "01_data/preprocessedData/random_train_sentences.csv"
     TEST_FILENAME = "01_data/preprocessedData/random_dev_sentences.csv"
 
