@@ -36,7 +36,7 @@ def get_answer_sentence(nlp_paragraph, answer_start, answer_text):
         if token.i >= answer_span.start and token.i < answer_span.end:
             masked_answer_text_token.append("<<Answer>>")
         else:
-            masked_answer_text_token.append(token.text.lower())
+            masked_answer_text_token.append(clean_token(token.text))
 
     masked_answer_sentence_token = []
     for token in answer_span.sent:
@@ -46,7 +46,7 @@ def get_answer_sentence(nlp_paragraph, answer_start, answer_text):
             masked_answer_sentence_token.append(token.text.lower())
 
     return answer_span.sent.text,\
-           [clean(token.text) for token in answer_span.sent],\
+           [clean_token(token.text) for token in answer_span.sent],\
            answer_span.start,\
            answer_span.end,\
            masked_answer_text_token,\
@@ -101,10 +101,10 @@ def read_to_dataframe(filename, labeling, include_plausible_answers=False):
         for text in tqdm(json_dict['data']):
             text_title = text['title']
             for paragraph in text['paragraphs']:
-                paragraph_text = paragraph['context']
+                paragraph_text = clean_text(paragraph['context'])
                 paragraph_id = hashlib.sha224(paragraph_text.encode('utf-8')).hexdigest()
                 nlp_paragraph = nlp(paragraph_text)
-                paragraph_tokens = [clean(t.text) for t in nlp_paragraph]
+                paragraph_tokens = [clean_token(t.text) for t in nlp_paragraph]
                 askable_tokens = ["O"]*len(nlp_paragraph)
                 for question in paragraph['qas']:
                     question_id = question["id"]
@@ -143,11 +143,11 @@ def read_to_dataframe(filename, labeling, include_plausible_answers=False):
                                                          answer['text'])
                             if not result is None:
                                 correct_answer_sentence, correct_answer_sentence_token, answer_span_start, answer_span_end, masked_answer_text_token, masked_answer_sentence_token = result
-                                correct_answer_sentences.append(clean(correct_answer_sentence))
+                                correct_answer_sentences.append(clean_text(correct_answer_sentence))
                                 correct_answer_token_index.append((answer_span_start, answer_span_end))
                                 correct_masked_answer_texts_token.append(masked_answer_text_token)
                                 correct_masked_answer_sentences_token.append(masked_answer_sentence_token)
-                                correct_answer_sentences_token.append([clean(t) for t in correct_answer_sentence_token])
+                                correct_answer_sentences_token.append([clean_token(t) for t in correct_answer_sentence_token])
                                 #correct_answer_sentences_parse_tree.append(str(list(parser.parse(correct_answer_sentence_token))[0]))
                                 if labeling == "IOB":
                                     if (answer_span_end-answer_span_start) == 1:
@@ -170,11 +170,11 @@ def read_to_dataframe(filename, labeling, include_plausible_answers=False):
                                                           plausible_answer['text'])
                             if not result is None:
                                 plausible_answer_sentence, plausible_answer_sentence_token, answer_span_start, answer_span_end, masked_answer_text_token, masked_answer_sentence_token = result
-                                plausible_answer_sentences.append(clean(plausible_answer_sentence))
+                                plausible_answer_sentences.append(clean_text(plausible_answer_sentence))
                                 plausible_answer_tokens_index.append((answer_span_start,answer_span_end))
                                 plausible_masked_answer_texts_token.append(masked_answer_text_token)
                                 plausible_masked_answer_sentences_token.append(masked_answer_sentence_token)
-                                plausible_answer_sentences_token.append([clean(t) for t in plausible_answer_sentence_token])
+                                plausible_answer_sentences_token.append([clean_token(t) for t in plausible_answer_sentence_token])
                                 if labeling == "IOB":
                                     if (answer_span_end-answer_span_start) == 1:
                                         askable_tokens[answer_span_start] = "I-Answer"
@@ -348,13 +348,18 @@ def create_paragraph_conll_file(df_paragraph, filename):
             f.write("-DOCSTART- -X- O O\n")
 
 
-def clean(token):
+def clean_token(token):
     if token == "":
         return "<<EMPTY>>"
     else:
         token = re.sub("\n", "<<LINEBREAK>>",token)
         token = re.sub(r"\s", "<<WHITESPACE>>", token)
         return token
+
+def clean_text(text):
+    text = re.sub("\n", " ",text)
+    text = re.sub(r"\s", " ", text)
+    return text
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Preprocessing')
