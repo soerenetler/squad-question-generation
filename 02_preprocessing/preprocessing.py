@@ -349,7 +349,6 @@ def create_paragraph_conll_file(df_paragraph, filename):
 
 
 def clean(token):
-    token.text
     if token == "":
         return "<<EMPTY>>"
     else:
