@@ -104,7 +104,7 @@ def read_to_dataframe(filename, labeling, include_plausible_answers=False):
                 paragraph_text = paragraph['context']
                 paragraph_id = hashlib.sha224(paragraph_text.encode('utf-8')).hexdigest()
                 nlp_paragraph = nlp(paragraph_text)
-                paragraph_tokens = [clean(t) for t in nlp_paragraph]
+                paragraph_tokens = [clean(t.text) for t in nlp_paragraph]
                 askable_tokens = ["O"]*len(nlp_paragraph)
                 for question in paragraph['qas']:
                     question_id = question["id"]
